@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  feat-store:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_HOSTNAME: features-db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: admin
+      DATABASE_PASSWORD: admin
+      DATABASE_NAME: features
+    depends_on:
+      - "features-db"
+    command: [ "./wait-for-it.sh", "features-db:5432", "-s", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--no-access-log"]
+  features-db:
+    container_name: features-db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: features
+      PGDATA: /data/postgres
+    volumes:
+      - postgres-db:/data/postgres
+    ports:
+      - "5432:5432"
+volumes:
+  postgres-db:
+    driver: local
