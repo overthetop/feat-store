@@ -1,5 +1,6 @@
-import pandas as pd
 import logging
+
+import pandas as pd
 
 from fake_data_lake import FakeDataLake
 from feature_store import FeatureStore
@@ -34,7 +35,8 @@ class Backfill:
 
         # save to storage
         if not len(df) == 0:
-            self.storage.init_schema(df, ['location', 'date'])
+            if not self.daily:
+                self.storage.init_schema(df, ['location', 'date'])
             self.storage.save(df)
         else:
             logger.info('nothing to store')
